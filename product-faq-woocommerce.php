@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Product FAQ for woocommerce
+ * Plugin Name: Product FAQs for WooCommerce
  * Plugin URI: https://nazmunsakib.co/
- * Description: Dynamic Event Management plugin!
+ * Description: WooCommerce Product FAQs plugin!
  * Version: 1.0.0
  * Author: Nazmun Sakib
  * Author URI: https://nazmunsakib.com
@@ -19,7 +19,7 @@
  * WC requires at least: 3.2
  * WC tested up to: 7.9
  * 
- *  @package ProductFaqWoocommerce
+ *  @package ProductFaqWoo
  */
 
 
@@ -94,14 +94,7 @@ final class Product_FAQ_Woocommerce {
      * Initializes the plugin.
      */
     public function init() {
-        $this->includes();
-    }
-
-    /**
-     * Includes necessary files.
-     */
-    private function includes() {
-
+        ProductFaqWoo\Product_Faq_Woo_Main::init();
     }
 
     /**
