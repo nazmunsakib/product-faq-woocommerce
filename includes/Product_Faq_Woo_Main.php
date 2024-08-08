@@ -36,6 +36,7 @@ class Product_Faq_Woo_Main {
         new Enqueue();
         new Product_Faq_Frontend();
         new Product_Faq_Backend();
+        new Rest_API();
 	}
 
 }
