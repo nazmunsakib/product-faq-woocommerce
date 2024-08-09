@@ -5,10 +5,13 @@
  * @package ProductFaqWoo
  */
 namespace ProductFaqWoo;
+use ProductFaqWoo\Traits\Helper;
 
 defined('ABSPATH') || die();
 
 class Product_Faq_Backend {
+
+    use Helper;
 
 	/**
 	 * Class constructor.
@@ -24,18 +27,17 @@ class Product_Faq_Backend {
 	}
 
     public function faq_tab_data_panels() {
+        
         ?>
-        <div id="ffw_product_data" class="panel ffw_options_panel woocommerce_options_panel hidden">
+        <div id="pfaqwc_product_data" class="panel woocommerce_options_panel hidden">
             <?php
-            echo "sakib";
+            echo "Hello World";
             if ( isset($_GET['post']) && ! empty($_GET['post']) ) {
                 $post_id = sanitize_text_field( wp_unslash($_GET['post']) );
                 $faq_post_ids = get_post_meta($post_id, 'ffw_product_faq_post_ids', true);
                 $faq_post_ids = !empty($faq_post_ids) ? $faq_post_ids : [];
                 $product_faqs_data = wp_json_encode($faq_post_ids);
-                $faq_posts = ffw_get_faqs_post_list();
-
-                var_dump($faq_post_ids);
+                $faq_posts = $this->get_faqs();
                 ?>
                     <?php include FFW_FILE_DIR . '/views/faq-woocommerce-modal-form.php'; ?>
                     <div class="ffw-product-loader">
@@ -43,8 +45,7 @@ class Product_Faq_Backend {
                             <span class="spinner is-active"></span>
                         </div>
                     </div>
-                    <div class="ffw-product-form-header" id="ffw-product-form-header">
-                        <?php do_action( 'before_faq_woocommerce_product_options' ); ?>
+                    <div >
                         <div class="ffw-sortable-options-wrapper">
                             <div class="ffw-product-form-heading">
                                 <?php echo sprintf('<h3 class="ffw-option-header-title">%s</h3>', esc_html__('FAQ List', 'faq-for-woocommerce')); ?>
@@ -57,7 +58,7 @@ class Product_Faq_Backend {
                                 ?>
                             </div>
                             <div class="ffw-sortable-options-header">
-                                <select class="ffw_search" id="ffw_search">
+                                <select>
                                     <option value=""><?php esc_html_e('Select a FAQ', 'faq-for-woocommerce'); ?></option>
                                     <?php
                                     if( $faq_posts ) {
@@ -68,21 +69,8 @@ class Product_Faq_Backend {
                                     ?>
     
                                 </select>
-                                <div class="ffw-option-buttons">
-                                    <?php echo sprintf('<button class="ffw-add-new ffw-options-header-btn">%s</button>', esc_html__('Quick Add', 'faq-for-woocommerce')); ?>
-                                    <?php echo sprintf('<button class="ffw-delete-all ffw-options-header-btn" id="ffw-delete-all-faq">%s</button>', esc_html__('Delete All', 'faq-for-woocommerce')); ?>
-                                </div>
-                                <input type="hidden" id="ffw_products" value='<?php echo esc_html($product_faqs_data); ?>'>
-                                <input type="hidden" id="ffw_product_page_id" value="<?php echo isset($_GET['post']) ? esc_html($_GET['post']) : ''; ?>">
-                            </div>
-                            <div class="ffw-body">
-                                <?php
-                                ffw_get_option_panel_body($_GET['post']);
-                                ?>
                             </div>
                         </div>
-    
-                        <?php do_action( 'after_faq_woocommerce_product_options' ); ?>
                     </div>
                 <?php
             }else {
@@ -96,7 +84,7 @@ class Product_Faq_Backend {
     public function faq_data_tab( $tabs ) {
         $tabs['product_faq_woocommerce'] = array(
             'label'    => 'FAQs',
-            'target'   => 'product_faq_data',
+            'target'   => 'pfaqwc_product_data',
             'priority' => 100,
         );
         
