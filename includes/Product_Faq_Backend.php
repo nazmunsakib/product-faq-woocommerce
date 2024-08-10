@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Main Class
+ * Product_Faq_Backend
  *
  * @package ProductFaqWoo
  */
@@ -27,54 +27,50 @@ class Product_Faq_Backend {
 	}
 
     public function faq_tab_data_panels() {
-        
+        $product_id = ( isset($_GET['post'])  && !empty(isset($_GET['post'])) ) ? intval( $_GET['post'] ) : 0;
         ?>
-        <div id="pfaqwc_product_data" class="panel woocommerce_options_panel hidden">
+        <div id="pfw_product_data" class="panel woocommerce_options_panel hidden">
             <?php
-            echo "Hello World";
-            if ( isset($_GET['post']) && ! empty($_GET['post']) ) {
-                $post_id = sanitize_text_field( wp_unslash($_GET['post']) );
+            if ( $product_id ) {
+                $post_id = sanitize_text_field( wp_unslash($product_id) );
                 $faq_post_ids = get_post_meta($post_id, 'ffw_product_faq_post_ids', true);
                 $faq_post_ids = !empty($faq_post_ids) ? $faq_post_ids : [];
                 $product_faqs_data = wp_json_encode($faq_post_ids);
                 $faq_posts = $this->get_faqs();
                 ?>
-                    <?php include FFW_FILE_DIR . '/views/faq-woocommerce-modal-form.php'; ?>
-                    <div class="ffw-product-loader">
-                        <div class="ffw-product-loader-overlay">
-                            <span class="spinner is-active"></span>
-                        </div>
+                <div class="pfw-product-loader">
+                    <div class="pfw-product-loader-overlay">
+                        <span class="spinner is-active"></span>
                     </div>
-                    <div >
-                        <div class="ffw-sortable-options-wrapper">
-                            <div class="ffw-product-form-heading">
-                                <?php echo sprintf('<h3 class="ffw-option-header-title">%s</h3>', esc_html__('FAQ List', 'faq-for-woocommerce')); ?>
-                                <?php 
-                                echo sprintf(
-                                    '<p>%s <span class="ffw-note">%s</span></p>', 
-                                    esc_html__('Manage current product FAQs here.', 'faq-for-woocommerce'), 
-                                    esc_html__('These controls will work if only products are assigned to FAQs instead of product categories.', 'faq-for-woocommerce')
-                                ); 
-                                ?>
-                            </div>
-                            <div class="ffw-sortable-options-header">
-                                <select>
-                                    <option value=""><?php esc_html_e('Select a FAQ', 'faq-for-woocommerce'); ?></option>
-                                    <?php
-                                    if( $faq_posts ) {
-                                        foreach($faq_posts as $post) {
-                                            echo sprintf('<option value="%s">%s</option>', esc_html($post->ID), esc_html($post->post_title));
-                                        }
+                </div>
+                <div id="pfw-tab-content-wrapper" class="pfw-tab-content-wrapper">
+                    <div class="pfw-tab-content-inner">
+                        <div class="pfw-tab-content-header">
+                            <?php echo sprintf('<h3 class="ffw-option-header-title">%s</h3>', esc_html__('Frequently Asked a Question (FAQ)', 'faq-for-woocommerce')); ?>
+                            <?php 
+                            echo sprintf(
+                                '<p>%s</p>', 
+                                esc_html__('Manage current product FAQs here.', 'faq-for-woocommerce')
+                            ); 
+                            ?>
+                        </div>
+                        <div class="pfw-tab-faq-sorting">
+                            <select id="pfw-tab-faq-select">
+                                <option value=""><?php esc_html_e('Select a FAQ', 'faq-for-woocommerce'); ?></option>
+                                <?php
+                                if( $faq_posts ) {
+                                    foreach($faq_posts as $post) {
+                                        echo sprintf('<option value="%s">%s</option>', esc_html($post->ID), esc_html($post->post_title));
                                     }
-                                    ?>
-    
-                                </select>
-                            </div>
+                                }
+                                ?>
+                            </select>
                         </div>
                     </div>
+                </div>
                 <?php
             }else {
-                echo sprintf('<div class="ffw-product-publish-msg">%s</div>', esc_html__("Please publish the product first to insert the faqs", "faq-for-woocommerce"));
+                echo sprintf('<div class="pfw-product-publish-msg">%s</div>', esc_html__("Please publish the product first to insert the faqs", "faq-for-woocommerce"));
             }
             ?>
         </div>
@@ -84,7 +80,7 @@ class Product_Faq_Backend {
     public function faq_data_tab( $tabs ) {
         $tabs['product_faq_woocommerce'] = array(
             'label'    => 'FAQs',
-            'target'   => 'pfaqwc_product_data',
+            'target'   => 'pfw_product_data',
             'priority' => 100,
         );
         
