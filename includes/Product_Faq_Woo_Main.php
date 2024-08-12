@@ -7,6 +7,8 @@
 namespace ProductFaqWoo;
 use ProductFaqWoo\Enqueue;
 use ProductFaqWoo\Product_Faq_Frontend;
+use ProductFaqWoo\Admin\Metaboxes;
+use ProductFaqWoo\Admin\Product_Faq_Backend;
 
 defined('ABSPATH') || die();
 
@@ -37,6 +39,7 @@ class Product_Faq_Woo_Main {
         new Product_Faq_Frontend();
         new Product_Faq_Backend();
         new Rest_API();
+        new Metaboxes();
 	}
 
 }

@@ -24,13 +24,10 @@ class Product_Faq_Frontend {
     public function add_product_faq_tab( $tabs ){
         global $post;
         $id = $post->ID;
-    
-        $tab_label = __('FAQs', 'product-faq-woocommerce');
-    
 
         // Adds the new tab
         $tabs['product_faqs_woo'] = array(
-            'title'    => __( $tab_label, 'product-faq-woocommerce' ),
+            'title'    => __('FAQs', 'product-faq-woocommerce' ),
             'priority' => '50',
             'callback' => array($this, 'display_faqs'),
         );

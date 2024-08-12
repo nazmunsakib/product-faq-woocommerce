@@ -4,7 +4,7 @@
  *
  * @package ProductFaqWoo
  */
-namespace ProductFaqWoo;
+namespace ProductFaqWoo\Admin;
 use ProductFaqWoo\Traits\Helper;
 
 defined('ABSPATH') || die();
@@ -100,7 +100,7 @@ class Product_Faq_Backend {
         ];
     
         $args = [
-            "label"=> esc_html__( "Product FAQs", "product-faq-woocommerce" ),
+            "label" => esc_html__( "Product FAQs", "product-faq-woocommerce" ),
             "labels" => $labels,
             "description" => "",
             "public" => true,
