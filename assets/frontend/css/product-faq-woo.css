@@ -1,27 +1,41 @@
-.accordion__wrapper {
-    background-color: var(--color-white);
-    box-shadow: var(--shadow);
-    border-radius: 2.5rem;
-    width: 100%;
-    max-width: 60rem;
-    padding: 5rem;
-}
-
-.accordion__title{
-    font-size: var(--fs-lg);
-    font-weight: var(--fw-bold);
-    color: var(--color-title);
+.pfw-faq-title{
+    font-size:18px;
+    font-weight: 700;
     text-align: center;
     margin-bottom: 4rem;
 }
 
-.accordion {
-    border-bottom: 0.1rem solid var(--color-border);
-    padding-bottom: 2rem;
-    margin-bottom: 3rem;
+.pfw-faq-icon{
+    cursor: pointer;
+    position: relative;
+    transition: .4s;
 }
 
-.accordion__header {
+.pfw-faq-icon::before{
+    content: "";
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transition: all 0.2s ease-in-out;
+    display: block;
+    width: 12px;
+    height: 12px;
+    border-top: solid 2px #999;
+    border-right: solid 2px #999;
+    transform: translateY(-50%) rotate(135deg);
+}
+
+.pfw-open .pfw-faq-icon::before{
+    transform: translateY(-50%) rotate(315deg);
+}
+
+.pfw-faq-item {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 18px;
+    margin-bottom: 20px;
+}
+
+.pfw-faq-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -29,36 +43,19 @@
     cursor: pointer;
 } 
 
-.accordion__icon {
-    background-color: var(--color-primary);
-    width: 2.2rem;
-    height: 2.2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    color: var(--color-white);
-    flex-shrink: 0;
+.pfw-faq-question{
+    font-size: 20px;
+    font-weight: 500;
 }
 
-.accordion__question{
-    font-size: var(--fs-md);
-    font-weight: var(--fw-medium);
-    color: var(--color-title);
+.pfw-faq-answer{
+    padding: 18px 0;
+    font-size: 16px;
+    font-weight: 400;
 }
 
-.accordion__answer{
-    padding: 2rem 0;
-}
-
-.accordion__content{
+.pfw-faq-content{
     overflow: hidden;
     height: 0;
-    transition: var(--transition);
-}
-
-@media screen and (min-width: 580px) {
-    .accordion__wrapper {
-        padding: 5rem 8rem;
-    }
+    transition: .4s;
 }
