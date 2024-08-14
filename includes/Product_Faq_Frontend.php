@@ -5,10 +5,13 @@
  * @package ProductFaqWoo
  */
 namespace ProductFaqWoo;
+use ProductFaqWoo\Traits\Helper;
 
 defined('ABSPATH') || die();
 
 class Product_Faq_Frontend {
+
+    use Helper;
 
 	/**
 	 * Class constructor.
@@ -22,8 +25,6 @@ class Product_Faq_Frontend {
 	}
 
     public function add_product_faq_tab( $tabs ){
-        global $post;
-        $id = $post->ID;
 
         // Adds the new tab
         $tabs['product_faqs_woo'] = array(
@@ -36,11 +37,14 @@ class Product_Faq_Frontend {
     }
 
     public function display_faqs() {
-        global $product;
         wp_enqueue_style('product-faq-woo-frontend');
         wp_enqueue_script('product-faq-woo-frontend-script');
 
-        include PRODUCT_FAQ_WOO_PATH . '/views/layouts/layout-1.php';
+        global $product;
+        $id     = $product->get_id();
+        $faqs   = $this->faqs_by_product_id($id);
+
+        include PRODUCT_FAQ_WOO_PATH . '/views/layouts/layout-classic.php';
     }
 
 }
