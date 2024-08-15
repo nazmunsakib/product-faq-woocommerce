@@ -49,4 +49,27 @@ trait Helper {
 
         return apply_filters('pfw_get_product_faqs_data', $faq_lists);
     }
+
+
+	function pfw_get_random_product_id_has_faq() {
+		$args = array(
+			'post_type' => 'product',
+			'posts_per_page' => 1,
+			'fields' => 'ids',
+			'meta_query' => array(
+				array(
+					'key' => 'ffw_product_faq_post_ids',
+					'value' => '',
+					'compare' => '!=',
+				),
+			),
+			'orderby' => 'rand',
+			'order' => 'ASC',
+		);
+
+		$product_ids = get_posts($args);
+
+		return reset($product_ids);
+	}
+
 }

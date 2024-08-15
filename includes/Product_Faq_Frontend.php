@@ -21,7 +21,7 @@ class Product_Faq_Frontend {
 	}
 
 	private function add_hooks() {
-        add_filter( 'woocommerce_product_tabs', [$this, 'add_product_faq_tab' ] );
+        add_filter('woocommerce_product_tabs', [$this, 'add_product_faq_tab']);
 	}
 
     public function add_product_faq_tab( $tabs ){
