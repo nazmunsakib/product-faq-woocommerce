@@ -1,5 +1,9 @@
 <div class="pfw-faq-wrapper pfw-faq-layout-1">
-    <?php foreach( $faqs as $faq ) : ?>
+    <?php 
+    $ids =  get_post_meta( 136, 'pfw_product_faqs');
+
+    var_dump( $ids );
+    foreach( $faqs as $faq ) : ?>
         <div class="pfw-faq-item">
             <div class="pfw-faq-header">
                 <span class="pfw-faq-question">What is the purpose of this pen?</span>

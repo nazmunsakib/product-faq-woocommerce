@@ -27,13 +27,15 @@ trait Helper {
 
         $faqs = get_posts($args);
 
-        return apply_filters('get_product_faqs', $faqs);
+        return apply_filters('get_pfw_product_faqs', $faqs);
     }
 
     public function faqs_by_product_id( $product_id = 0 ){
 
         $faq_lists  = [];
-        $faq_ids    = get_post_meta( $product_id, 'pfw_faq_ids', true ) ?? [];
+        $faq_ids    = get_post_meta( $product_id, 'pfw_product_faqs', true ) ?? [];
+
+        
 
         foreach( $faq_ids as $id ) {
 
