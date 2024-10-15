@@ -37,12 +37,14 @@ class Product_Faq_Frontend {
     }
 
     public function display_faqs() {
-        wp_enqueue_style('product-faq-woo-frontend');
-        wp_enqueue_script('product-faq-woo-frontend-script');
-
         global $product;
-        $id     = $product->get_id();
-        $faqs   = $this->faqs_by_product_id($id);
+        wp_enqueue_style('pwf-frontend');
+        wp_enqueue_script('pwf-frontend');
+        wp_enqueue_script('pfw-global');
+
+        $product_id = $product->get_id();
+        $faqs_ids   = get_post_meta( $product_id, 'pfw_faq_ids', true ) ?? [];
+        $faqs       = $this->get_faqs($faqs_ids);
 
         include PRODUCT_FAQ_WOO_PATH . '/views/layouts/layout-classic.php';
     }

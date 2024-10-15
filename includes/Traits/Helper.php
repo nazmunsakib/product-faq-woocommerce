@@ -15,19 +15,25 @@ trait Helper {
      *
      * @since 1.3.0
      */
-    public function get_faqs( $ids = false ) {
-        $faqs   = [];
-        $fields = $ids ? 'ids' : 'all';
+    public function get_faqs( $ids = 0 ) {
+
+        if( is_array($ids) && count($ids) == 0 ){
+            return [];
+        }
 
         $args = array(
             'post_type'         => 'product_faq',
-            'fields'            => $fields,
             'posts_per_page'    => -1,
         );
 
+        if( is_array(  $ids ) && count($ids) > 0 ){
+            $args['post__in']   = $ids;
+            $args['orderby']    = 'post__in';
+        }
+
         $faqs = get_posts($args);
 
-        return apply_filters('get_pfw_product_faqs', $faqs);
+        return apply_filters('pfw_get_product_faqs', $faqs);
     }
 
     public function faqs_by_product_id( $product_id = 0 ){

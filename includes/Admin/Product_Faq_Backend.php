@@ -21,28 +21,27 @@ class Product_Faq_Backend {
 	}
 
 	private function add_hooks() {
-        add_action('woocommerce_product_data_panels', [$this, 'faq_tab_data_panels']);
-        add_filter('woocommerce_product_data_tabs',  [$this,'faq_data_tab'] );
-        add_action('init', [$this, 'register_post_type']);
+        add_action('woocommerce_product_data_panels', [$this, 'pwf_tab_data_panels']);
+        add_filter('woocommerce_product_data_tabs',  [$this,'pwf_data_tab'] );
+        add_action('init', [$this, 'register_cpt']);
 	}
 
-    public function faq_tab_data_panels() {
-        $product_id = ( isset($_GET['post'])  && !empty(isset($_GET['post'])) ) ? intval( $_GET['post'] ) : 0;
+    public function pwf_tab_data_panels() {
+        wp_enqueue_script('pfw-global');
+        wp_enqueue_script('pfw-admin');
+        wp_enqueue_style('pfw-admin');
+        
+        $product_id = ( isset( $_GET['post'] ) && !empty( isset($_GET['post'] ) ) ) ? intval( $_GET['post'] ) : 0;
         ?>
         <div id="pfw_product_data" class="panel woocommerce_options_panel hidden">
             <?php
             if ( $product_id ) {
-                $post_id = sanitize_text_field( wp_unslash($product_id) );
-                $faq_post_ids = get_post_meta($post_id, 'ffw_product_faq_post_ids', true);
-                $faq_post_ids = !empty($faq_post_ids) ? $faq_post_ids : [];
-                $product_faqs_data = wp_json_encode($faq_post_ids);
-                $faq_posts = $this->get_faqs();
+                $post_id            = sanitize_text_field( wp_unslash($product_id) );
+                $faq_ids            = get_post_meta( $post_id, 'pfw_faq_ids', true );
+                $selected_faqs_ids  = !empty($faq_ids) ? $faq_ids : [];
+                $faqs               = $this->get_faqs();
+                $selected_faqs      = $this->get_faqs($selected_faqs_ids);
                 ?>
-                <div class="pfw-product-loader">
-                    <div class="pfw-product-loader-overlay">
-                        <span class="spinner is-active"></span>
-                    </div>
-                </div>
                 <div id="pfw-tab-content-wrapper" class="pfw-tab-content-wrapper">
                     <div class="pfw-tab-content-inner">
                         <div class="pfw-tab-content-header">
@@ -54,17 +53,35 @@ class Product_Faq_Backend {
                             ); 
                             ?>
                         </div>
-                        <div class="pfw-tab-faq-sorting">
-                            <select id="pfw-tab-faq-select">
-                                <option value=""><?php esc_html_e('Select a FAQ', 'faq-for-woocommerce'); ?></option>
+                        <div class="pfw-tab-faq-sorting" data-product-id="<?php echo esc_attr( $post_id ); ?>">
+                            <select id="pfw-tab-faq-select" name="pfw-tab-faq" multiple data-pfw-multi-select>
                                 <?php
-                                if( $faq_posts ) {
-                                    foreach($faq_posts as $post) {
-                                        echo sprintf('<option value="%s">%s</option>', esc_html($post->ID), esc_html($post->post_title));
+                                if( $faqs ) {
+                                    foreach($faqs as $faq) {
+                                        echo sprintf('<option value="%s">%s</option>', esc_html($faq->ID), esc_html($faq->post_title));
                                     }
                                 }
                                 ?>
                             </select>
+                        </div>
+                        <div id="pfw-tab-faq-list" class="pfw-tab-faq-list-wrapper">
+                            <?php 
+                                if( is_array($selected_faqs) && count($selected_faqs) > 0 ) :
+                                    foreach ( $selected_faqs as $faq ) :
+                                        ?>
+                                        <div class="pfw-faq-item">
+                                            <div class="pfw-faq-header">
+                                                <span class="pfw-faq-question"><?php echo esc_html($faq->post_title); ?></span>
+                                                <span class="pfw-faq-icon"></span>
+                                            </div>
+                                            <div class="pfw-faq-content">
+                                                <div class="pfw-faq-answer"><?php echo wp_kses_post($faq->post_content); ?></div>
+                                            </div>
+                                        </div>
+                                        <?php
+                                    endforeach;
+                                endif;
+                            ?>
                         </div>
                     </div>
                 </div>
@@ -77,7 +94,7 @@ class Product_Faq_Backend {
         <?php
     }
 
-    public function faq_data_tab( $tabs ) {
+    public function pwf_data_tab( $tabs ) {
         $tabs['product_faq_woocommerce'] = array(
             'label'    => 'FAQs',
             'target'   => 'pfw_product_data',
@@ -87,7 +104,7 @@ class Product_Faq_Backend {
         return $tabs;
     }
 
-    public function register_post_type(){
+    public function register_cpt(){
 
         /**
          * Post Type: Product FAQs.

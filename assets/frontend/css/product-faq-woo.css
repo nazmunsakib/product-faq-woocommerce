@@ -2,7 +2,6 @@
     font-size:18px;
     font-weight: 700;
     text-align: center;
-    margin-bottom: 4rem;
 }
 
 .pfw-faq-icon{
@@ -31,8 +30,6 @@
 
 .pfw-faq-item {
     border-bottom: 1px solid #ddd;
-    padding-bottom: 18px;
-    margin-bottom: 20px;
 }
 
 .pfw-faq-header {
@@ -41,6 +38,7 @@
     align-items: center;
     gap: 1rem;
     cursor: pointer;
+    padding: 12px 0;
 } 
 
 .pfw-faq-question{
@@ -49,7 +47,6 @@
 }
 
 .pfw-faq-answer{
-    padding: 18px 0;
     font-size: 16px;
     font-weight: 400;
 }

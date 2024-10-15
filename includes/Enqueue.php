@@ -26,12 +26,61 @@ class Enqueue {
 	 * @return void
 	 */
 	public function admin_assets() {
+		/**
+		 * Register Admin css
+		 */
 		wp_register_style(
-			'database-crud-operations',
-			PRODUCT_FAQ_WOO_ASSETS . '/css/style.css',
+			'chosen',
+			PFW_ASSETS . '/admin/css/chosen.min.css',
 			null,
-			PRODUCT_FAQ_WOO_VERSION
+			PFW_VERSION
 		);
+		wp_register_style(
+			'select2',
+			PFW_ASSETS . '/admin/css/select2.min.css',
+			null,
+			PFW_VERSION
+		);
+
+		wp_register_style(
+			'pfw-admin',
+			PFW_ASSETS . '/admin/css/pfw-admin.css',
+			null,
+			PFW_VERSION
+		);
+
+		/**
+		 * Register Admin JS
+		 */
+		wp_register_script(
+			'pfw-admin',
+			PFW_ASSETS . '/admin/js/pfw-admin.js',
+			['pfw-global'],
+			PFW_VERSION
+		);
+		wp_register_script(
+			'pfw-global',
+			PFW_ASSETS . '/global/js/pfw-global.js',
+			null,
+			PFW_VERSION
+		);
+		wp_register_script(
+			'select2',
+			PFW_ASSETS . '/admin/js/select2.min.js',
+			['jquery'],
+			PFW_VERSION
+		);
+		wp_register_script(
+			'chosen',
+			PFW_ASSETS . '/admin/js/chosen.jquery.min.js',
+			['jquery'],
+			PFW_VERSION
+		);
+
+		wp_localize_script('pfw-global', 'pfwObj', array(
+			'nonce' 	=> wp_create_nonce('wp_rest'),
+			'api_url' 	=> esc_url_raw(rest_url()),
+		));
 	}
 
     /**
@@ -43,17 +92,24 @@ class Enqueue {
 	 */
 	public function frontend_assets() {
 		wp_register_style(
-			'product-faq-woo-frontend',
-			PRODUCT_FAQ_WOO_ASSETS . '/frontend/css/product-faq-woo.css',
+			'pwf-frontend',
+			PFW_ASSETS . '/frontend/css/product-faq-woo.css',
 			null,
-			PRODUCT_FAQ_WOO_VERSION
+			PFW_VERSION
 		);
 
 		wp_register_script(
-			'product-faq-woo-frontend-script',
-			PRODUCT_FAQ_WOO_ASSETS . '/frontend/js/script.js',
+			'pwf-frontend',
+			PFW_ASSETS . '/frontend/js/script.js',
+			['pfw-global'],
+			PFW_VERSION
+		);
+
+		wp_register_script(
+			'pfw-global',
+			PFW_ASSETS . '/global/js/pfw-global.js',
 			null,
-			PRODUCT_FAQ_WOO_VERSION
+			PFW_VERSION
 		);
 	}
 

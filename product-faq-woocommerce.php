@@ -75,11 +75,11 @@ final class Product_FAQ_Woocommerce {
      * Defines plugin constants.
      */
     private function define_constants() {
-        define( 'PRODUCT_FAQ_WOO_VERSION', self::$version );
+        define( 'PFW_VERSION', self::$version );
         define( 'PRODUCT_FAQ_WOO_FILE', __FILE__ );
         define( 'PRODUCT_FAQ_WOO_PATH', __DIR__ );
         define( 'PRODUCT_FAQ_WOO_URL', plugins_url( '', PRODUCT_FAQ_WOO_FILE ) );
-        define( 'PRODUCT_FAQ_WOO_ASSETS', PRODUCT_FAQ_WOO_URL . '/assets' );
+        define( 'PFW_ASSETS', PRODUCT_FAQ_WOO_URL . '/assets' );
     }
 
     /**
