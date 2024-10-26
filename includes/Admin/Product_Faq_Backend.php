@@ -27,17 +27,27 @@ class Product_Faq_Backend {
 	}
 
     public function pwf_tab_data_panels() {
+        //Load script
         wp_enqueue_script('pfw-global');
+        wp_enqueue_script('pfw-multi-select');
         wp_enqueue_script('pfw-admin');
+
+        //Load Style
+        wp_enqueue_style('pfw-multi-select');
         wp_enqueue_style('pfw-admin');
         
         $product_id = ( isset( $_GET['post'] ) && !empty( isset($_GET['post'] ) ) ) ? intval( $_GET['post'] ) : 0;
         ?>
         <div id="pfw_product_data" class="panel woocommerce_options_panel hidden">
+            <div class="pfw-product-loader">
+                <div class="pfw-product-loader-overlay">
+                    <span class="spinner is-active"></span>
+                </div>
+            </div>
             <?php
             if ( $product_id ) {
                 $post_id            = sanitize_text_field( wp_unslash($product_id) );
-                $faq_ids            = get_post_meta( $post_id, 'pfw_faq_ids', true );
+                $faq_ids            = get_post_meta( $post_id, 'pfw_faq_product_ids', true );
                 $selected_faqs_ids  = !empty($faq_ids) ? $faq_ids : [];
                 $faqs               = $this->get_faqs();
                 $selected_faqs      = $this->get_faqs($selected_faqs_ids);
@@ -53,12 +63,13 @@ class Product_Faq_Backend {
                             ); 
                             ?>
                         </div>
-                        <div class="pfw-tab-faq-sorting" data-product-id="<?php echo esc_attr( $post_id ); ?>">
-                            <select id="pfw-tab-faq-select" name="pfw-tab-faq" multiple data-pfw-multi-select>
+                        <div class="pfw-tab-faq-sorting">
+                            <select id="pfw-faq-select" name="pfw-faq-select" data-product-id="<?php echo esc_attr( $post_id ); ?>" data-placeholder="Select FAQs" multiple>
                                 <?php
                                 if( $faqs ) {
                                     foreach($faqs as $faq) {
-                                        echo sprintf('<option value="%s">%s</option>', esc_html($faq->ID), esc_html($faq->post_title));
+                                        $selected = in_array($faq->ID, $selected_faqs_ids) ? 'selected' : '';
+                                        echo sprintf('<option value="%s" %s>%s</option>', esc_html($faq->ID), $selected, esc_html($faq->post_title));
                                     }
                                 }
                                 ?>
@@ -69,13 +80,9 @@ class Product_Faq_Backend {
                                 if( is_array($selected_faqs) && count($selected_faqs) > 0 ) :
                                     foreach ( $selected_faqs as $faq ) :
                                         ?>
-                                        <div class="pfw-faq-item">
-                                            <div class="pfw-faq-header">
-                                                <span class="pfw-faq-question"><?php echo esc_html($faq->post_title); ?></span>
-                                                <span class="pfw-faq-icon"></span>
-                                            </div>
-                                            <div class="pfw-faq-content">
-                                                <div class="pfw-faq-answer"><?php echo wp_kses_post($faq->post_content); ?></div>
+                                        <div class="pfw-tab-faq-item">
+                                            <div class="pfq-tab-faq">
+                                                <h3 class="pfq-tab-faq-title"><?php echo esc_html($faq->post_title); ?></h3>
                                             </div>
                                         </div>
                                         <?php

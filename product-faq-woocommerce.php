@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Product FAQs for WooCommerce
- * Plugin URI: https://nazmunsakib.co/
+ * Plugin URI: https://nazmunsakib.com/
  * Description: WooCommerce Product FAQs plugin!
  * Version: 1.0.0
  * Author: Nazmun Sakib
@@ -22,7 +22,6 @@
  *  @package ProductFaqWoo
  */
 
-
 defined('ABSPATH') || die();
 
 if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
@@ -30,7 +29,7 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 }
 
 /**
- * Main class for Dynamic Event Management plugin.
+ * Main class for Product FAQs for WooCommerce.
  */
 final class Product_FAQ_Woocommerce {
 

@@ -2,28 +2,43 @@
 /**
  * Metaboxes
  *
+ * This class handles the creation, rendering, and saving of metaboxes
+ * for Product FAQ settings in WooCommerce.
+ *
  * @package ProductFaqWoo
  */
+
 namespace ProductFaqWoo\Admin;
+
 use ProductFaqWoo\Traits\Helper;
 
 defined('ABSPATH') || die();
 
 /**
- * Metaboxes Class.
+ * Metaboxes Class
+ *
+ * Provides functionalities to add metaboxes for custom post types,
+ * render their content, and save the relevant meta data.
  */
-class Metaboxes{
+class Metaboxes {
 
     use Helper;
 
+    /**
+     * Post types for which the metabox is added.
+     *
+     * @var array
+     */
     private $post_types;
 
     /**
-     * Hook in tabs.
+     * Constructor.
+     *
+     * Initializes the class by hooking into the 'add_meta_boxes' and 'save_post' actions.
      */
-    public function __construct(){
-        add_action( 'add_meta_boxes', array( $this, 'add' ) );
-        add_action( 'save_post', array( $this, 'save' ) );
+    public function __construct() {
+        add_action('add_meta_boxes', array($this, 'add'));
+        add_action('save_post', array($this, 'save'));
 
         $this->post_types = ['product_faq'];
     }
@@ -31,14 +46,16 @@ class Metaboxes{
     /**
      * Add Metaboxes.
      *
-     * @param mixed $post_type post type
+     * Registers the metabox for the 'product_faq' post type.
+     *
+     * @param string $post_type The post type to which the metabox is added.
      */
     public function add($post_type) {
-        if ( in_array( $post_type, $this->post_types ) ) {
+        if (in_array($post_type, $this->post_types)) {
             add_meta_box(
                 'product_faq_meta_settings',
-                esc_html__( 'Product FAQ Settings', 'faq-for-woocommerce' ),
-                array( $this, 'render' ),
+                esc_html__('Product FAQ Settings', 'product-faq-woocommerce'),
+                array($this, 'render'),
                 $post_type,
                 'normal',
                 'high'
@@ -47,92 +64,114 @@ class Metaboxes{
     }
 
     /**
-     * Meta Box content.
+     * Render Metabox Content.
      *
-     * @param \WP_Post $post The post object.
+     * Outputs the content of the metabox, including a multi-select field
+     * to assign FAQs to products.
+     *
+     * @param \WP_Post $post The current post object.
      */
     public function render( $post ) {
+        wp_enqueue_script('pfw-multi-select');
+        wp_enqueue_style('pfw-multi-select');
+        wp_enqueue_script('pfw-admin');
         wp_enqueue_style('pfw-admin');
 
-        /**
-         * Retrieve saved meta value
-         */
-        $selected_faqs  = get_post_meta($post->ID, 'pfw_product_ids', true);
-        $selected_faqs  = is_array($selected_faqs) ? $selected_faqs : [];
+        $post_id = intval( $post->ID );
 
-        $products = get_posts(
-            array(
-                'post_type'     =>  'product',
-                'fields'        => 'ids',
-                'numberposts'   => -1,
-            )
+        $args = array(
+            'post_type'      => 'product',
+            'fields'         => 'ids',
+            'posts_per_page' => -1,
         );
 
-        $output  = '';
-        $output .= '<div class="pfw-faq-metabox-wrapper">';
-        $output .= '<label for="pfw_product_select">Choose Products:</label>';
-        $output .= '<select id="pfw_product_select" name="pfw_product_ids[]" multiple="multiple">';
-        
-        foreach ( $products as $product_id ) {
-            $product_title  = get_the_title( post: $product_id );
-            $selected   = in_array($product_id, $selected_faqs) ? 'selected' : '';
-            $output .= '<option value="'.esc_attr($product_id).'" '.esc_attr($selected).'>'.esc_html($product_title).'</option>';
-        }
+        $product_ids = get_posts( $args );
+        ?>
+        <div class="pfw-faq-metabox-wrapper"></div>
+        <table class="pfw-faq-metabox-table">
+            <tbody>
+                <tr class="pfw-faq-metabox-row">
+                    <th>
+                        <label for="pfw_faq_products"><?php echo esc_html__('Choose Products:', 'product-faq-woocommerce') ?></label>
+                    </th>
+                    <td>
+                        <select id="pfw_faq_products" name="pfw_faq_products" data-placeholder="Select Product" multiple data-multi-select>
+                            <?php
+                            if ( $product_ids ) {
+                                foreach ( $product_ids as $product_id ) {
+                                    $selected_faqs  = get_post_meta( $product_id, 'pfw_faq_product_ids', true ) ?? [];
+                                    $selected_faqs  = is_array( $selected_faqs ) ? $selected_faqs : [];
+                                    $selected       = in_array( $post_id, $selected_faqs ) ? 'selected' : '';
+                                    $product_title  = get_the_title( $product_id );
 
-        $output .= '</select>';
-        $output .= '</div>';
-
-        echo $output;
+                                    echo sprintf('<option value="%s" %s>%s</option>', esc_attr( $product_id ), $selected, esc_html($product_title));
+                                }
+                            }
+                            ?>
+                        </select>
+                        <p><?php echo esc_html__('Search and select products to assign to the FAQ!', 'product-faq-woocommerce'); ?></p>
+                        <input type="hidden" name="pfw_saved_product_ids" value="<?php echo esc_attr(implode(',', $product_ids ) ); ?>">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <?php
     }
 
-
     /**
-     * Save the meta when the post is saved.
+     * Save Metabox Data.
+     *
+     * Saves the selected products and updates the meta data accordingly
+     * when the post is saved.
      *
      * @param int $post_id The ID of the post being saved.
      */
     public function save( $post_id ) {
-
-        /**
-         * Verify the nonce and autosave
-         */
-        if (!isset($_POST['pfw_product_ids']) || defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        // Check if this is an autosave.
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return;
         }
 
-        /**
-         * Retrieve existing faq meta values
-         */
-        $old_faq_meta = get_post_meta($post_id, 'pfw_product_ids', true);
-        $old_faq_meta = is_array($old_faq_meta) ? $old_faq_meta : [];
+        $product_ids = $_POST['pfw_faq_products'] ?? [];
 
-        /**
-         * Get the new values from the form submission
-         */
-        $new_faq_meta = $_POST['pfw_product_ids'];
+        // Check for saved product IDs.
+        if (isset( $_POST['pfw_saved_product_ids'] ) && !empty( $_POST['pfw_saved_product_ids'] ) ) {
+            $saved_product_ids = sanitize_text_field($_POST['pfw_saved_product_ids']);
+            if ( !empty( $saved_product_ids ) ) {
+                $saved_product_ids = explode( ',', $saved_product_ids );
+                $removed_product_ids = array_diff( $saved_product_ids, $product_ids );
+            }
+        }
 
-        /**
-         * Merge the old values with the new values
-         */
-        $merged_faq_meta = array_unique(array_merge($old_faq_meta, $new_faq_meta));
+        // Remove FAQ from previously assigned products if necessary.
+        if ( isset( $removed_product_ids ) && is_array( $removed_product_ids ) && !empty( $removed_product_ids ) ) {
+            foreach ($removed_product_ids as $removed_product_id) {
+                $faq_ids = get_post_meta( $removed_product_id, 'pfw_faq_product_ids', true );
+                if ( !empty( $faq_ids ) ) {
+                    $index = array_search( $post_id, $faq_ids );
+                    if (isset( $faq_ids[$index] ) ) {
+                        unset( $faq_ids[$index] );
+                        update_post_meta( $removed_product_id, 'pfw_faq_product_ids', $faq_ids );
+                    }
+                }
+            }
+        }
 
-        /**
-         * Save the selected FAQ IDs
-         */
-        update_post_meta($post_id, 'pfw_product_ids', $merged_faq_meta);
+        // Add FAQ post ID to the selected products.
+        if ( isset( $product_ids ) && is_array( $product_ids ) && !empty( $product_ids ) ) {
+            foreach ( $product_ids as $product_id ) {
+                $faq_id    = (int) $post_id;
+                $product_id = (int) $product_id;
 
-        foreach( $merged_faq_meta as $product_id ){
-            /**
-             * Retrieve existing product meta values
-             */
-            $old_product_meta = get_post_meta($product_id, 'pfw_faq_ids', true);
-            $old_product_meta = is_array($old_product_meta) ? $old_product_meta : [];
+                $product_ids = get_post_meta( $post_id, 'pfw_faq_product_ids', true );
+                $product_ids = is_array( $product_ids ) ? $product_ids : [];
 
-            array_push($old_product_meta, $post_id);
+                array_push( $product_ids, $faq_id );
+                $product_ids = array_unique( $product_ids );
 
-            $new_product_meta = array_unique($old_product_meta);
-
-            update_post_meta( $product_id, 'pfw_faq_ids', meta_value: $new_product_meta );
+                update_post_meta( $product_id, 'pfw_faq_product_ids', $product_ids );
+            }
         }
     }
 }
