@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Product FAQs for WooCommerce
+ * Plugin Name: Product FAQs WooCommerce
  * Plugin URI: https://nazmunsakib.com/
  * Description: WooCommerce Product FAQs plugin!
  * Version: 1.0.0
