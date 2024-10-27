@@ -104,13 +104,14 @@ class Metaboxes {
                                     $selected       = in_array( $post_id, $selected_faqs ) ? 'selected' : '';
                                     $product_title  = get_the_title( $product_id );
 
-                                    echo sprintf('<option value="%s" %s>%s</option>', esc_attr( $product_id ), $selected, esc_html($product_title));
+                                    echo sprintf('<option value="%s" %s>%s</option>', esc_attr( $product_id ), esc_attr($selected), esc_html($product_title));
                                 }
                             }
                             ?>
                         </select>
                         <p><?php echo esc_html__('Search and select products to assign to the FAQ!', 'product-faq-woocommerce'); ?></p>
                         <input type="hidden" name="pfw_saved_product_ids" value="<?php echo esc_attr(implode(',', $product_ids ) ); ?>">
+                        <?php wp_nonce_field('pfw_faq_nonce_action', 'pfw_faq_nonce'); ?>
                     </td>
                 </tr>
             </tbody>
@@ -130,6 +131,11 @@ class Metaboxes {
     public function save( $post_id ) {
         // Check if this is an autosave.
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
+
+        // Verify nonce
+        if (!isset($_POST['pfw_faq_nonce']) || !wp_verify_nonce($_POST['pfw_faq_nonce'], 'pfw_faq_nonce_action')) {
             return;
         }
 

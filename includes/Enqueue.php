@@ -63,19 +63,22 @@ class Enqueue {
             'pfw-admin',
             PFW_ASSETS . '/admin/js/pfw-admin.js',
             ['pfw-global', 'pfw-multi-select'],
-            PFW_VERSION
+            PFW_VERSION,
+            true
         );
         wp_register_script(
             'pfw-global',
             PFW_ASSETS . '/global/js/pfw-global.js',
             null,
-            PFW_VERSION
+            PFW_VERSION,
+            true
         );
         wp_register_script(
             'pfw-multi-select',
             PFW_ASSETS . '/admin/js/multi-select.js',
             null,
-            PFW_VERSION
+            PFW_VERSION,
+            true
         );
 
         // Localize the global script with data accessible in JavaScript.
@@ -107,13 +110,15 @@ class Enqueue {
             'pwf-frontend',
             PFW_ASSETS . '/frontend/js/script.js',
             ['pfw-global'], // Sets 'pfw-global' as a dependency.
-            PFW_VERSION
+            PFW_VERSION,
+            true
         );
         wp_register_script(
             'pfw-global',
             PFW_ASSETS . '/global/js/pfw-global.js',
             null,
-            PFW_VERSION
+            PFW_VERSION,
+            true
         );
     }
 }

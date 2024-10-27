@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Product FAQs WooCommerce
  * Plugin URI: https://nazmunsakib.com/
- * Description: WooCommerce Product FAQs plugin!
+ * Description: Product FAQs WooCommerce helps store owners manage FAQs on product pages to improve user experience and increase conversions.
  * Version: 1.0.0
  * Author: Nazmun Sakib
  * Author URI: https://nazmunsakib.com

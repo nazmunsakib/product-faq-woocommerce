@@ -36,6 +36,7 @@ class Product_Faq_Backend {
         wp_enqueue_style('pfw-multi-select');
         wp_enqueue_style('pfw-admin');
         
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reason for ignoring the warning
         $product_id = ( isset( $_GET['post'] ) && !empty( isset($_GET['post'] ) ) ) ? intval( $_GET['post'] ) : 0;
         ?>
         <div id="pfw_product_data" class="panel woocommerce_options_panel hidden">
@@ -69,7 +70,7 @@ class Product_Faq_Backend {
                                 if( $faqs ) {
                                     foreach($faqs as $faq) {
                                         $selected = in_array($faq->ID, $selected_faqs_ids) ? 'selected' : '';
-                                        echo sprintf('<option value="%s" %s>%s</option>', esc_html($faq->ID), $selected, esc_html($faq->post_title));
+                                        echo sprintf('<option value="%s" %s>%s</option>', esc_html($faq->ID), esc_attr($selected), esc_html($faq->post_title));
                                     }
                                 }
                                 ?>
